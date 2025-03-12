@@ -14,3 +14,26 @@ For each customer, calculate their total spending (sum of the total amounts from
 and rank them by total spending within their respective country. 
 Use a **window function** to rank the customers.
 */
+
+SELECT CustomersNew.customer_name, customersnew.join_date, COUNT(OrdersNew.Order_ID) as Number_of_orders
+FROM customersnew
+JOIN ordersnew
+ON customersnew.customer_id=ordersnew.customer_id
+GROUP BY customersnew.customer_name, customersnew.join_date
+ORDER BY Number_of_orders DESC
+;
+
+SELECT 
+CustomersNew.customer_name, 
+customersnew.country, 
+SUM(ordersitemnew.quantity*ordersitemnew.price) as Total_Spending
+RANK () OVER (PARTITION BY customersnew.country ORDER BY SUM(ordersitemnew.quantity*ordersitemnew.price)) AS SpendingRank
+FROM customersnew
+JOIN ordersnew
+ON customersnew.customer_id=ordersnew.customer_id
+JOIN orderitemsnew
+ON ordersnew.order_id=orderitemsnew.order_id
+GROUP BY CustomersNew.customer_name, customersnew.country, SpendingRank
+;
+
+
